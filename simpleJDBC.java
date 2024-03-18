@@ -13,6 +13,7 @@ class simpleJDBC {
         else
             tableName += "exampletbl";
 
+
         // Register the driver.  You must register the driver before you can use it.
         try {
             DriverManager.registerDriver(new com.ibm.db2.jcc.DB2Driver());
@@ -69,7 +70,8 @@ class simpleJDBC {
                     System.out.println("6. Quit");
                     System.out.println("Input corresponding numerical value of choice");
                     inputString = userInput.nextLine();
-                    switch (inputString) {
+                    switch (inputString)
+                    {
                         case "1":
                             mainMenuState = mainMenu.orderHistory;
                             break;
@@ -90,7 +92,9 @@ class simpleJDBC {
                             break;
                         default:
                             System.out.println("Invalid choice");
+                            break;
                     }
+                    break;
                    // break;
                 case orderHistory:
                     String fname = "";
@@ -168,12 +172,13 @@ class simpleJDBC {
                         System.out.println("Returning to main menu");
                         mainMenuState = mainMenu.top;
                     }
+                    break;
                 case addItem:
                     String itemId = "";
                     System.out.println("Enter a unique item id");
                     itemId = userInput.nextLine();
                     try {
-                        String querySQL = "SELECT count(itemid) FROM item where itemid = " + itemId;
+                        String querySQL = "SELECT count(itemid) FROM item where itemid = " + "\'" + itemId + "\'";
                         System.out.println(querySQL);
                         java.sql.ResultSet rs = statement.executeQuery(querySQL);
                         while (rs.next()) {
@@ -214,20 +219,20 @@ class simpleJDBC {
                     System.out.println("Enter the item's price");
                     price = userInput.nextDouble();
                     System.out.println("Enter the item's material");
-                    material = userInput.nextLine();
+                    material = userInput.next();
                     System.out.println("Enter the item's size");
-                    size = userInput.nextLine();
+                    size = userInput.next();
                     System.out.println("Enter the item's information");
-                    information = userInput.nextLine();
+                    information = userInput.next();
                     System.out.println("Enter the item's manufacturing country");
-                    country = userInput.nextLine();
+                    country = userInput.next();
                     System.out.println("Enter the item's model description");
-                    description = userInput.nextLine();
+                    description = userInput.next();
                     System.out.println("Enter the supplier's email address");
-                    cemail = userInput.nextLine();
+                    cemail = userInput.next();
                     // Inserting Data into the table
                     try {
-                        String insertSQL = "INSERT INTO " + "Item" + " VALUES ( " + name + ", " + finalSale + ", " + brand + "," + color + ", " + price + ", " + material + ", " + size + ", " + information + ", " + country + ", " + description + ", " + cemail + " ) ";
+                        String insertSQL = "INSERT INTO " + "Item" + " VALUES ( \'" + name + "\', \'" + finalSale + "\', \'" + brand + "\',\'" + color + "\', \'" + price + "\', \'" + material + "\', \'" + size + "\', \'" + information + "\', \'" + country + "\', \'" + description + "\', \'" + cemail + "\' ) ";
                         System.out.println(insertSQL);
                         statement.executeUpdate(insertSQL);
                         System.out.println("DONE");
@@ -243,6 +248,7 @@ class simpleJDBC {
                     }
                     break;
                 case viewCart:
+                    System.out.println("JAKE IS NOT HOT");
                     break;
                 case cancel:
                     break;
@@ -250,7 +256,7 @@ class simpleJDBC {
                     running = false;
                     break;
             }
-            break;
+           // break;
         }
 
 // //
