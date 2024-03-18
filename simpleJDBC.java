@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class simpleJDBC {
@@ -70,8 +71,7 @@ class simpleJDBC {
                     System.out.println("6. Quit");
                     System.out.println("Input corresponding numerical value of choice");
                     inputString = userInput.nextLine();
-                    switch (inputString)
-                    {
+                    switch (inputString) {
                         case "1":
                             mainMenuState = mainMenu.orderHistory;
                             break;
@@ -95,7 +95,7 @@ class simpleJDBC {
                             break;
                     }
                     break;
-                   // break;
+                // break;
                 case orderHistory:
                     String fname = "";
                     String lname = "";
@@ -177,16 +177,14 @@ class simpleJDBC {
                     String itemId = "";
                     System.out.println("Enter a unique item id");
                     itemId = userInput.nextLine();
+                    int count = 0;
                     try {
                         String querySQL = "SELECT count(itemid) FROM item where itemid = " + "\'" + itemId + "\'";
                         System.out.println(querySQL);
                         java.sql.ResultSet rs = statement.executeQuery(querySQL);
                         while (rs.next()) {
-                            int count = rs.getInt(1);
-                            if (count > 0) {
-                                System.out.println("This item already exists in the database.");
-                                continue;
-                            }
+                            count = rs.getInt(1);
+
                         }
                     } catch (SQLException e) {
                         sqlCode = e.getErrorCode(); // Get SQLCODE
@@ -197,6 +195,10 @@ class simpleJDBC {
                         System.out.println(e);
                         System.out.println("Returning to main menu");
                         mainMenuState = mainMenu.top;
+                    }
+                    if (count > 0) {
+                        System.out.println("This item already exists in the database.");
+                        continue;
                     }
                     String name = "";
                     boolean finalSale = false;
@@ -213,26 +215,48 @@ class simpleJDBC {
                     System.out.println("Enter the name of the item");
                     name = userInput.nextLine();
                     System.out.println("Enter whether the item is up for FINAL SALE");
-                    finalSale = userInput.nextBoolean();
+                    try {
+                        finalSale = userInput.nextBoolean();
+                    } catch (Exception e) {
+                        System.out.println("Invalid value.");
+                        System.out.println("Returning to main menu");
+                        mainMenuState = mainMenu.top;
+                        userInput.nextLine();
+                        continue;
+                    }
+                    userInput.nextLine();
                     System.out.println("Enter the item's brand");
                     brand = userInput.nextLine();
                     System.out.println("Enter the item's price");
-                    price = userInput.nextDouble();
+                    try {
+                        price = userInput.nextDouble();
+                    } catch (Exception e) {
+                        System.out.println("Invalid value.");
+                        System.out.println("Returning to main menu");
+                        mainMenuState = mainMenu.top;
+                        userInput.nextLine();
+                        continue;
+                    }
+                    userInput.nextLine();
                     System.out.println("Enter the item's material");
-                    material = userInput.next();
+                    material = userInput.nextLine();
                     System.out.println("Enter the item's size");
-                    size = userInput.next();
+                    size = userInput.nextLine();
                     System.out.println("Enter the item's information");
-                    information = userInput.next();
+                    information = userInput.nextLine();
                     System.out.println("Enter the item's manufacturing country");
-                    country = userInput.next();
-                    System.out.println("Enter the item's model description");
-                    description = userInput.next();
+                    country = userInput.nextLine();
                     System.out.println("Enter the supplier's email address");
-                    cemail = userInput.next();
+                    cemail = userInput.nextLine();
+                    System.out.println("Enter the item's color");
+                    color = userInput.nextLine();
+                    System.out.println("Enter a description of the model");
+                    description = userInput.nextLine();
+                    System.out.println("Enter the name of the supplier");
+                    supplier = userInput.nextLine();
                     // Inserting Data into the table
                     try {
-                        String insertSQL = "INSERT INTO " + "Item" + " VALUES ( \'" + name + "\', \'" + finalSale + "\', \'" + brand + "\',\'" + color + "\', \'" + price + "\', \'" + material + "\', \'" + size + "\', \'" + information + "\', \'" + country + "\', \'" + description + "\', \'" + cemail + "\' ) ";
+                        String insertSQL = "INSERT INTO " + "Item" + " VALUES ( \'" + name + "\', \'" + finalSale + "\', \'" + brand + "\',\'" + color + "\', \'" + price + "\', \'" + material + "\', \'" + size + "\', \'" + information + "\', \'" + country + "\', \'" + itemId + "\', \'" + description + "\', \'" + supplier + "\', \'" + cemail + "\' ) ";
                         System.out.println(insertSQL);
                         statement.executeUpdate(insertSQL);
                         System.out.println("DONE");
@@ -256,7 +280,7 @@ class simpleJDBC {
                     running = false;
                     break;
             }
-           // break;
+            // break;
         }
 
 // //
