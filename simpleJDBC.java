@@ -21,7 +21,6 @@ class simpleJDBC {
         } catch (Exception cnfe) {
             System.out.println("Class not found");
         }
-
         // This is the url you must use for DB2.
         //Note: This url may not valid now ! Check for the correct year and semester and server name.
         String url = "jdbc:db2://winter2024-comp421.cs.mcgill.ca:50000/comp421";
