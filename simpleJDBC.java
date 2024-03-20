@@ -258,7 +258,7 @@ class simpleJDBC {
                         String insertSQL = "INSERT INTO " + "Item" + " VALUES ( \'" + name + "\', \'" + finalSale + "\', \'" + brand + "\',\'" + color + "\', \'" + price + "\', \'" + material + "\', \'" + size + "\', \'" + information + "\', \'" + country + "\', \'" + itemId + "\', \'" + description + "\', \'" + supplier + "\', \'" + cemail + "\' ) ";
                         System.out.println(insertSQL);
                         statement.executeUpdate(insertSQL);
-                        System.out.println("DONE");
+                        System.out.println("The item has been successfully inserted into the database!");
                     } catch (SQLException e) {
                         sqlCode = e.getErrorCode(); // Get SQLCODE
                         sqlState = e.getSQLState(); // Get SQLSTATE
@@ -271,7 +271,7 @@ class simpleJDBC {
                     }
                     break;
                 case viewCart:
-                    System.out.println("JAKE IS NOT HOT");
+                    System.out.println("");
                     break;
                 case cancel:
                     break;
