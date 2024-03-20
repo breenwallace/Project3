@@ -66,8 +66,8 @@ class simpleJDBC {
                     System.out.println("1. View customer order history");
                     System.out.println("2. View appointment by stylist");
                     System.out.println("3. Add item to the store");
-                    System.out.println("4. Cancel an order");
-                    System.out.println("5. View customer cart");
+                    System.out.println("4. View customer cart");
+                    System.out.println("5. Cancel an order");
                     System.out.println("6. Quit");
                     System.out.println("Input corresponding numerical value of choice");
                     inputString = userInput.nextLine();
@@ -283,8 +283,8 @@ class simpleJDBC {
                         String lastName = userInput.nextLine();
                         System.out.println("Enter the customer's email address:");
                         String emailAddress = userInput.nextLine();
-                
-                        String getCartId= "SELECT cartId FROM Cart WHERE firstName = \'" + firstName + "\' AND lastName = \'" + lastName + "\' AND emailAddress = \'" + emailAddress + "\'";
+
+                        String getCartId = "SELECT cartId FROM Cart WHERE firstName = \'" + firstName + "\' AND lastName = \'" + lastName + "\' AND emailAddress = \'" + emailAddress + "\'";
                         try {
                             java.sql.ResultSet vcartId = statement.executeQuery(getCartId);
                             if (vcartId.next()) {
@@ -299,10 +299,10 @@ class simpleJDBC {
                     }
                     count = 0;
                     boolean viewingCart = true;
-                    while(viewingCart){
+                    while (viewingCart) {
                         String listCartItems = "SELECT co.itemId, i.name FROM Contain co, Item i WHERE co.cartId = \'" + cartId + "\' AND i.itemId = co.itemId";
                         String countCartItems = "SELECT COUNT(co.itemId) FROM Contain co, Item i WHERE co.cartId = \'" + cartId + "\' AND i.itemId = co.itemId";
-                        try{
+                        try {
                             java.sql.ResultSet cartItemsCountRS = statement.executeQuery(countCartItems);
                             while (cartItemsCountRS.next()) {
                                 count = cartItemsCountRS.getInt(1);
@@ -318,8 +318,8 @@ class simpleJDBC {
 //                            }
                             java.sql.ResultSet cartItemsRS = statement.executeQuery(listCartItems);
                             int counter = 1;
-                            int[] mapA = new int[count+1];
-                            while(cartItemsRS.next()){
+                            int[] mapA = new int[count + 1];
+                            while (cartItemsRS.next()) {
                                 int vitemId = cartItemsRS.getInt(1);
                                 String vitemName = cartItemsRS.getString(2);
                                 System.out.println(counter + ". Item ID: " + vitemId + " Item Name: " + vitemName);
@@ -334,19 +334,72 @@ class simpleJDBC {
                                 String removeItemSQL = "DELETE FROM Contain WHERE cartId = \'" + cartId + "\' AND itemId = \'" + mapA[itemToRemove] + "\'";
                                 statement.executeUpdate(removeItemSQL);
                                 System.out.println("Item removed from cart.");
-                            }
-                            else{
+                            } else {
                                 viewingCart = false;
                                 mainMenuState = mainMenu.top;
                             }
-                        }
-                        catch (SQLException e) {
+                        } catch (SQLException e) {
                             System.out.println(e);
                             return;
                         }
                     }
                     break;
                 case cancel:
+                    String orderId = "";
+                    System.out.println("Please note only an order \"In progress\" can be cancelled");
+                    System.out.println("Enter the order id");
+                    orderId = userInput.nextLine();
+                    String orderId2 = "";
+                    String orderStatus = "";
+                    String itemId2 = "";
+                    String name2;
+                    String cartId2;
+                    String fname2;
+                    String lname2;
+                    try {
+                        String querySQL = "SELECT ord.orderId, ord.orderStatus, i.itemId, i.name, orderToCart.cartId, ord.firstName, ord.lastName FROM Orders ord, Checkout orderToCart, Contain itemToCart, Item i WHERE ord.orderId = orderToCart.orderId AND orderToCart.cartId = itemToCart.cartId AND itemToCart.itemId = i.itemId AND ord.orderId = \'" + orderId + "\'";
+                        System.out.println(querySQL);
+                        java.sql.ResultSet rs = statement.executeQuery(querySQL);
+                        while (rs.next()) {
+                            orderId2 = rs.getString(1);
+                            orderStatus = rs.getString(2);
+                            itemId2 = rs.getString(3);
+                            name2 = rs.getString(4);
+                            cartId2 = rs.getString(5);
+                            fname2 = rs.getString(6);
+                            lname2 = rs.getString(7);
+                            System.out.println("OrderID:  " + orderId2);
+                            System.out.println("Order Status:  " + orderStatus);
+                            System.out.println("ItemID:  " + itemId2);
+                            System.out.println("Item Name:  " + name2);
+                            System.out.println("CartID:  " + cartId2);
+                            System.out.println("Customer First Name:  " + fname2);
+                            System.out.println("Customer Last Name:  " + lname2);
+                        }
+                        if ((orderStatus).equals("In progress"))
+                        {
+                            System.out.println("The selected order will now be cancelled");
+                            String updateSQL = "UPDATE Orders SET orderStatus = \'Cancelled\' WHERE orderId = \'" + orderId + "\'";
+                            System.out.println(updateSQL);
+                            statement.executeUpdate(updateSQL);
+                            System.out.println("Cancellation Successful. Returning to main menu");
+                            mainMenuState = mainMenu.top;
+                        }
+                        else {
+                            System.out.println("The selected order has a status that does not allow for modification. Returning to main menu");
+                            mainMenuState = mainMenu.top;
+                        }
+
+                    } catch (SQLException e) {
+                        sqlCode = e.getErrorCode(); // Get SQLCODE
+                        sqlState = e.getSQLState(); // Get SQLSTATE
+                        // Your code to handle errors comes here;
+                        // something more meaningful than a print would be good
+                        System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
+                        System.out.println(e);
+                        System.out.println("Returning to main menu");
+                        mainMenuState = mainMenu.top;
+                    }
                     break;
                 case quit:
                     running = false;
