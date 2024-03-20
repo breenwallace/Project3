@@ -57,6 +57,7 @@ class simpleJDBC {
         boolean running = true;
         String inputString = "";
         Scanner userInput = new Scanner(System.in);
+        int count = 0;
         //Main loop
         while (running) {
             switch (mainMenuState) {
@@ -176,7 +177,7 @@ class simpleJDBC {
                     String itemId = "";
                     System.out.println("Enter a unique item id");
                     itemId = userInput.nextLine();
-                    int count = 0;
+                    count = 0;
                     try {
                         String querySQL = "SELECT count(itemid) FROM item where itemid = " + "\'" + itemId + "\'";
                         System.out.println(querySQL);
@@ -273,7 +274,77 @@ class simpleJDBC {
                     }
                     break;
                 case viewCart:
-                    System.out.println("");
+
+                    int cartId = -1;
+                    while (cartId == -1) {
+                        System.out.println("Enter the customer's first name:");
+                        String firstName = userInput.nextLine();
+                        System.out.println("Enter the customer's last name:");
+                        String lastName = userInput.nextLine();
+                        System.out.println("Enter the customer's email address:");
+                        String emailAddress = userInput.nextLine();
+                
+                        String getCartId= "SELECT cartId FROM Cart WHERE firstName = \'" + firstName + "\' AND lastName = \'" + lastName + "\' AND emailAddress = \'" + emailAddress + "\'";
+                        try {
+                            java.sql.ResultSet vcartId = statement.executeQuery(getCartId);
+                            if (vcartId.next()) {
+                                cartId = vcartId.getInt(1);
+                            } else {
+                                System.out.println("Invalid credentials. Please try again.");
+                            }
+                        } catch (SQLException e) {
+                            System.out.println(e);
+                            System.out.println("Invalid credentials. Please try again.");
+                        }
+                    }
+                    count = 0;
+                    boolean viewingCart = true;
+                    while(viewingCart){
+                        String listCartItems = "SELECT co.itemId, i.name FROM Contain co, Item i WHERE co.cartId = \'" + cartId + "\' AND i.itemId = co.itemId";
+                        String countCartItems = "SELECT COUNT(co.itemId) FROM Contain co, Item i WHERE co.cartId = \'" + cartId + "\' AND i.itemId = co.itemId";
+                        try{
+                            java.sql.ResultSet cartItemsCountRS = statement.executeQuery(countCartItems);
+                            while (cartItemsCountRS.next()) {
+                                count = cartItemsCountRS.getInt(1);
+                            }
+                            if (count < 1) {
+
+                                System.out.println("The cart is empty. Returning to main menu.");
+                                mainMenuState = mainMenu.top;
+                                break;
+                            }
+//                            while (cartItemsCountRS.next()) {
+//                                count = cartItemsCountRS.getInt(1);
+//                            }
+                            java.sql.ResultSet cartItemsRS = statement.executeQuery(listCartItems);
+                            int counter = 1;
+                            int[] mapA = new int[count+1];
+                            while(cartItemsRS.next()){
+                                int vitemId = cartItemsRS.getInt(1);
+                                String vitemName = cartItemsRS.getString(2);
+                                System.out.println(counter + ". Item ID: " + vitemId + " Item Name: " + vitemName);
+                                mapA[counter] = vitemId;
+                                counter++;
+                            }
+
+                            System.out.println("Select the item to remove from the cart by menu value, or '0' to return to main menu:");
+                            int itemToRemove = userInput.nextInt();
+                            userInput.nextLine();
+                            if (itemToRemove != 0) {
+                                String removeItemSQL = "DELETE FROM Contain WHERE cartId = \'" + cartId + "\' AND itemId = \'" + mapA[itemToRemove] + "\'";
+                                statement.executeUpdate(removeItemSQL);
+                                System.out.println("Item removed from cart.");
+                            }
+                            else{
+                                viewingCart = false;
+                                mainMenuState = mainMenu.top;
+                            }
+                        }
+                        catch (SQLException e) {
+                            System.out.println(e);
+                            return;
+                        }
+                    }
                     break;
                 case cancel:
                     break;
