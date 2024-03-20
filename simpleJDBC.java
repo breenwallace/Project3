@@ -199,6 +199,7 @@ class simpleJDBC {
                         System.out.println("This item already exists in the database.");
                         continue;
                     }
+                    System.out.println("The id entered is unique");
                     String name = "";
                     boolean finalSale = false;
                     String brand = "";
@@ -259,6 +260,7 @@ class simpleJDBC {
                         System.out.println(insertSQL);
                         statement.executeUpdate(insertSQL);
                         System.out.println("The item has been successfully inserted into the database!");
+                        mainMenuState = mainMenu.top;
                     } catch (SQLException e) {
                         sqlCode = e.getErrorCode(); // Get SQLCODE
                         sqlState = e.getSQLState(); // Get SQLSTATE
