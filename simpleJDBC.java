@@ -62,7 +62,7 @@ class simpleJDBC {
         while (running) {
             switch (mainMenuState) {
                 case top:
-                    System.out.println("Select following an option:");
+                    System.out.println("Select an option:");
                     System.out.println("1. View customer order history");
                     System.out.println("2. View appointment by stylist");
                     System.out.println("3. Add item to the store");
@@ -339,9 +339,19 @@ class simpleJDBC {
                                 mainMenuState = mainMenu.top;
                             }
                         } catch (SQLException e) {
+                            System.out.println("Code: " + sqlCode + "  sqlState: " + sqlState);
                             System.out.println(e);
-                            return;
+                            System.out.println("Returning to main menu");
+                            mainMenuState = mainMenu.top;
+                            viewingCart = false;;
                         }
+                        catch (Exception e)
+                        {
+                            System.out.println("Incorrect input, returning to main menu");
+                            mainMenuState = mainMenu.top;
+                            viewingCart = false;
+                        }
+
                     }
                     break;
                 case cancel:
